@@ -142,5 +142,4 @@ void process_input(int argc, char **argv) {
 void handle_redir(int count, char *argv[]){
 
 }
-
 /* ----------------------------------------------------------------- */
