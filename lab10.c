@@ -23,11 +23,8 @@
 
 /* function prototypes */
 int parseline(char *cmdline, char **argv);
-
-//The two function prototypes below will be needed in lab10.
-//Leave them here to be used later.
-/* void process_input(int argc, char **argv); */
-/* void handle_redir(int count, char *argv[]); */
+void process_input(int argc, char **argv);
+void handle_redir(int count, char *argv[]);
 
 /* ----------------------------------------------------------------- */
 /*                  The main program starts here                     */
@@ -126,6 +123,7 @@ void process_input(int argc, char **argv) {
     /* < , or  >, or both */
 
 
+
     /* Step 2: perform system call execvp to execute command */
     /* Hint: Please be sure to review execvp.c sample program */
     /* if (........ == -1) { */
@@ -136,10 +134,9 @@ void process_input(int argc, char **argv) {
 }
 
 /* ----------------------------------------------------------------- */
-/*                  process_input                                    */
+/*                  handle_redir                                     */
 /* ----------------------------------------------------------------- */
 void handle_redir(int count, char *argv[]){
 
 }
-
 /* ----------------------------------------------------------------- */
