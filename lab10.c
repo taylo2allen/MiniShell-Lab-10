@@ -137,6 +137,15 @@ void process_input(int argc, char **argv) {
 /*                  handle_redir                                     */
 /* ----------------------------------------------------------------- */
 void handle_redir(int count, char *argv[]){
-
+    int out_redir = 0; 
+    int in_redir  =0;
+   
+    for(loop = 0; loop < argc ; loop++){
+        if(strcmp(argv[0], ">") ==  0){
+            if(strcmo(argv[0] != 0)
+                    perror(EXIT_FAILURE);
+            else if(loop == 0)      
+        }
+    }
 }
 /* ----------------------------------------------------------------- */
