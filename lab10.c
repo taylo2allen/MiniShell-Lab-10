@@ -64,33 +64,40 @@ int main(void){
       else if(strcmp(argv[0], "exit") ==  0){
         return EXIT_SUCCESS;
     } else if (strcmp(argv[0], "pwd") == 0){                   // if argv[0] equals pwd print the current working dir
-      (getcwd(path, MAX_PATH_LENGTH)) ? printf("%s\n", path) : printf("Cannot Print The Current Working Directory.\n");
+        (getcwd(path, MAX_PATH_LENGTH)) ? printf("%s\n", path) : printf("Cannot Print The Current Working Directory.\n");
       continue;
     } else if (strcmp(argv[0], "cd") == 0 && argv[1] == NULL){ // if argv[0] equals cd without a second arg change dir to HOME
-      chdir(getenv("HOME"));
-      continue;
-    } else if (strcmp(argv[0], "cd") == 0){                    // if cd has a second arg change dir to the path specified
-      int dirErr = chdir(argv[1]);
-      (dirErr < 0) ? perror("Error") : chdir(argv[1]);
-      continue;
+        chdir(getenv("HOME"));
+        continue;
+      } else if (strcmp(argv[0], "cd") == 0){                    // if cd has a second arg change dir to the path specified
+          if(argc == 1){
+            chdir(getenv("HOME"));
+            continue;
+          } else{
+              if (chdir(argv[1]) == -1){
+                int dirErr = chdir(argv[1]);
+                (dirErr < 0) ? perror("Error") : chdir(argv[1]);
+                continue;
+              }
+          }
       } else{ /* Else, fork off a process */
-      pid = fork();
-      switch(pid){
-        case -1:
-        perror("Shell Program fork error");
-              exit(EXIT_FAILURE);
-      case 0:
-        /* I am child process. I will execute the command, */
-        /* and call: execvp */
-        process_input(argc, argv);
-        break;
-      default:
-        /* I am parent process */
-        if (wait(&status) == -1)
-          perror("Parent Process error");
-        else
-        printf("Child returned status: %d\n",status);
-        break;
+          pid = fork();
+          switch(pid){
+            case -1:
+              perror("Shell Program fork error");
+                  exit(EXIT_FAILURE);
+            case 0:
+            /* I am child process. I will execute the command, */
+            /* and call: execvp */
+            process_input(argc, argv);
+            break;
+            default:
+            /* I am parent process */
+            if (wait(&status) == -1)
+              perror("Parent Process error");
+            else
+              printf("Child returned status: %d\n",status);
+            break;
       }   /* end of the switch */
     }	/* end of the if-else-if */
   }	while (TRUE); /* end of the while */
@@ -118,19 +125,15 @@ int parseline(char *cmdline, char **argv){
 /*                  process_input                                    */
 /* ----------------------------------------------------------------- */
 void process_input(int argc, char **argv) {
+  int out;
 
-    /* Step 1: Call handle_redir to deal with operators: */
-    /* < , or  >, or both */
+  handle_redir(argc,argv);
+  out = execvp(argv[0],argv);
 
-
-
-    /* Step 2: perform system call execvp to execute command */
-    /* Hint: Please be sure to review execvp.c sample program */
-    /* if (........ == -1) { */
-    /*    fprintf(stderr, "Error on the exec call\n"); */
-    /*    _exit(EXIT_FAILURE); */
-    /* } */
-
+  if (out == -1) {
+      fprintf(stderr, "Error on the exec call\n");
+      _exit(EXIT_FAILURE);
+  }
 }
 
 /* ----------------------------------------------------------------- */
@@ -139,14 +142,43 @@ void process_input(int argc, char **argv) {
 void handle_redir(int count, char *argv[]){
   int out_redir = 0;
   int in_redir  =0;
+  int loop;
 
-  for(loop = 0; loop < argc ; loop++){
-    if(strcmp(argv[0], ">") ==  0){
-      if(strcmp(argv[0] != 0){
-        int dirErr = chdir(argv[1]);
-        (dirErr < 0) ? perror("Error") : chdir(argv[1]);
+  for(loop = 0; loop < count ; loop++){
+    if(strcmp(argv[loop], ">") ==  0){
+      printf("'>' redirect if working");
+      if(out_redir != 0){
+        printf("Error: Cannot output to more than one file.");
+        _exit(EXIT_FAILURE);
       }
+      else if(loop == 0){
+        printf("Error: No command entered.");
+        _exit(EXIT_FAILURE);
+      }
+      out_redir = loop;
     }
+    else if(strcmp(argv[loop], "<") ==  0){
+      if(in_redir != 0){
+        printf("Error: Cannot input to more than one file.");
+        _exit(EXIT_FAILURE);
+      }
+      else if(loop == 0){
+        printf("Error: No command entered.");
+        _exit(EXIT_FAILURE);
+      }
+      in_redir = loop;
+    }
+  }
+  if(out_redir != 0){
+    if(argv[out_redir+1] == NULL){
+      printf("Error: No command entered.");
+      _exit(EXIT_FAILURE);
+    }
+    int fd = open(argv[out_redir+1], O_RDWR | O_CREAT | O_TRUNC, O_RDWR);
+    /* if(fd == -1) perror("Error opening file"); */
+    if(fd == -1) perror("Redir Error");
+    dup2(fd,1);
+    close(fd);
   }
 }
 /* ----------------------------------------------------------------- */
