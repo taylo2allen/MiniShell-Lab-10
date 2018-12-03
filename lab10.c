@@ -64,41 +64,42 @@ int main(void){
       else if(strcmp(argv[0], "exit") ==  0){
         return EXIT_SUCCESS;
     } else if (strcmp(argv[0], "pwd") == 0){                   // if argv[0] equals pwd print the current working dir
-        (getcwd(path, MAX_PATH_LENGTH)) ? printf("%s\n", path) : printf("Cannot Print The Current Working Directory.\n");
+        (getcwd(path, MAX_PATH_LENGTH)) ? printf("%s\n", path) : fprintf(stderr, "Cannot Print The Current Working Directory.\n");
       continue;
     } else if (strcmp(argv[0], "cd") == 0 && argv[1] == NULL){ // if argv[0] equals cd without a second arg change dir to HOME
         chdir(getenv("HOME"));
         continue;
-      } else if (strcmp(argv[0], "cd") == 0){                    // if cd has a second arg change dir to the path specified
-          if(argc == 1){
-            chdir(getenv("HOME"));
-            continue;
-          } else{
-              if (chdir(argv[1]) == -1){
-                int dirErr = chdir(argv[1]);
-                (dirErr < 0) ? perror("Error") : chdir(argv[1]);
-                continue;
-              }
-          }
-      } else{ /* Else, fork off a process */
-          pid = fork();
-          switch(pid){
-            case -1:
-              perror("Shell Program fork error");
-                  exit(EXIT_FAILURE);
-            case 0:
-            /* I am child process. I will execute the command, */
-            /* and call: execvp */
-            process_input(argc, argv);
-            break;
-            default:
-            /* I am parent process */
-            if (wait(&status) == -1)
-              perror("Parent Process error");
-            else
-              printf("Child returned status: %d\n",status);
-            break;
-      }   /* end of the switch */
+    } else if (strcmp(argv[0], "cd") == 0){                    // if cd has a second arg change dir to the path specified
+        if(argc == 1){
+          chdir(getenv("HOME"));
+          continue;
+        } else{
+            if (chdir(argv[1]) == -1){
+              int dirErr = chdir(argv[1]);
+              (dirErr < 0) ? perror("Error") : chdir(argv[1]);
+              continue;
+            }
+        }
+    } else{ /* Else, fork off a process */
+        pid = fork();
+        switch(pid){
+          case -1:
+            perror("Shell Program fork error");
+                exit(EXIT_FAILURE);
+          case 0:
+          printf("case 0: sucess");
+          /* I am child process. I will execute the command, */
+          /* and call: execvp */
+          process_input(argc, argv);
+          break;
+          default:
+          /* I am parent process */
+          if (wait(&status) == -1)
+            perror("Parent Process error");
+          else
+            fprintf(stderr, "Child returned status: %d\n");
+          break;
+        }   /* end of the switch */
     }	/* end of the if-else-if */
   }	while (TRUE); /* end of the while */
 }     /* end of main */
@@ -140,8 +141,10 @@ void process_input(int argc, char **argv) {
 /*                  handle_redir                                     */
 /* ----------------------------------------------------------------- */
 void handle_redir(int count, char *argv[]){
+  /* int out_redir = dup(1); */
+  /* int in_redir  = dup(0); */
   int out_redir = 0;
-  int in_redir  =0;
+  int in_redir  = 0;
   int loop;
 
   for(loop = 0; loop < count ; loop++){
@@ -152,18 +155,18 @@ void handle_redir(int count, char *argv[]){
         _exit(EXIT_FAILURE);
       }
       else if(loop == 0){
-        printf("Error: No command entered.");
+        fprintf(stderr, "Error: No command entered.");
         _exit(EXIT_FAILURE);
       }
       out_redir = loop;
     }
     else if(strcmp(argv[loop], "<") ==  0){
       if(in_redir != 0){
-        printf("Error: Cannot input to more than one file.");
+        fprintf(stderr, "Error: Cannot input to more than one file.");
         _exit(EXIT_FAILURE);
       }
       else if(loop == 0){
-        printf("Error: No command entered.");
+        fprintf(stderr, "Error: No command entered.");
         _exit(EXIT_FAILURE);
       }
       in_redir = loop;
@@ -171,14 +174,27 @@ void handle_redir(int count, char *argv[]){
   }
   if(out_redir != 0){
     if(argv[out_redir+1] == NULL){
-      printf("Error: No command entered.");
+      fprintf(stderr, "Error: No command entered.");
       _exit(EXIT_FAILURE);
     }
-    int fd = open(argv[out_redir+1], O_RDWR | O_CREAT | O_TRUNC, O_RDWR);
-    /* if(fd == -1) perror("Error opening file"); */
-    if(fd == -1) perror("Redir Error");
-    dup2(fd,1);
-    close(fd);
+    int out_fd = open(argv[out_redir+1], /* O_RDWR */ O_WRONLY | O_CREAT | O_TRUNC, 0755);
+    /* if(out_fd == -1) perror("Error opening file"); */
+    if(out_fd == -1) perror("Redir Error");
+    dup2(out_fd,1);
+    close(out_fd);
+    argv[out_redir] = NULL;
+  }
+  if(in_redir != 0){
+    if(argv[in_redir+1] == NULL){
+      fprintf(stderr, "Error: No file");
+        _exit(EXIT_FAILURE);
+    }
+    int in_fd = open(argv[in_redir+1],O_RDONLY);
+
+    dup2(in_fd,0);
+    if(in_fd == -1) perror("Redir Error");
+    close(in_fd);
+    argv[in_redir] = NULL;
   }
 }
 /* ----------------------------------------------------------------- */
