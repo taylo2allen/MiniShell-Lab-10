@@ -87,7 +87,6 @@ int main(void){
             perror("Shell Program fork error");
                 exit(EXIT_FAILURE);
           case 0:
-          printf("case 0: sucess");
           /* I am child process. I will execute the command, */
           /* and call: execvp */
           process_input(argc, argv);
@@ -149,24 +148,23 @@ void handle_redir(int count, char *argv[]){
 
   for(loop = 0; loop < count ; loop++){
     if(strcmp(argv[loop], ">") ==  0){
-      printf("'>' redirect if working");
       if(out_redir != 0){
-        printf("Error: Cannot output to more than one file.");
+        printf("Error: Cannot output to more than one file.\n");
         _exit(EXIT_FAILURE);
       }
       else if(loop == 0){
-        fprintf(stderr, "Error: No command entered.");
+        fprintf(stderr, "Error: No command entered.\n");
         _exit(EXIT_FAILURE);
       }
       out_redir = loop;
     }
     else if(strcmp(argv[loop], "<") ==  0){
       if(in_redir != 0){
-        fprintf(stderr, "Error: Cannot input to more than one file.");
+        fprintf(stderr, "Error: Cannot input to more than one file.\n");
         _exit(EXIT_FAILURE);
       }
       else if(loop == 0){
-        fprintf(stderr, "Error: No command entered.");
+        fprintf(stderr, "Error: No command entered.\n");
         _exit(EXIT_FAILURE);
       }
       in_redir = loop;
@@ -174,7 +172,7 @@ void handle_redir(int count, char *argv[]){
   }
   if(out_redir != 0){
     if(argv[out_redir+1] == NULL){
-      fprintf(stderr, "Error: No command entered.");
+      fprintf(stderr, "Error: No command entered.\n");
       _exit(EXIT_FAILURE);
     }
     int out_fd = open(argv[out_redir+1], /* O_RDWR */ O_WRONLY | O_CREAT | O_TRUNC, 0755);
@@ -186,7 +184,7 @@ void handle_redir(int count, char *argv[]){
   }
   if(in_redir != 0){
     if(argv[in_redir+1] == NULL){
-      fprintf(stderr, "Error: No file");
+      fprintf(stderr, "Error: No file\n");
         _exit(EXIT_FAILURE);
     }
     int in_fd = open(argv[in_redir+1],O_RDONLY);
