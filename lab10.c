@@ -140,8 +140,6 @@ void process_input(int argc, char **argv) {
 /*                  handle_redir                                     */
 /* ----------------------------------------------------------------- */
 void handle_redir(int count, char *argv[]){
-  /* int out_redir = dup(1); */
-  /* int in_redir  = dup(0); */
   int out_redir = 0;
   int in_redir  = 0;
   int loop;
@@ -176,7 +174,6 @@ void handle_redir(int count, char *argv[]){
       _exit(EXIT_FAILURE);
     }
     int out_fd = open(argv[out_redir+1], /* O_RDWR */ O_WRONLY | O_CREAT | O_TRUNC, 0755);
-    /* if(out_fd == -1) perror("Error opening file"); */
     if(out_fd == -1) perror("Redir Error");
     dup2(out_fd,1);
     close(out_fd);
