@@ -1,0 +1,112 @@
+Script started on Mon 03 Dec 2018 05:21:32 PM PST
+Note: $DISPLAY is set to  for X windows.
+
+    *** Notice: This is an ECS IT resource, intended to be used for purposes
+        related to the educational activities of faculty, staff and students
+        of California State University Sacramento. Any other use is a
+        violation of University and College policy.
+
+
+[allent@atoz MiniShell-Lab-10]> cat names.txt
+Author(s): Jorge Tadeo & Taylor Allen
+[allent@atoz MiniShell-Lab-9]> a.out
+[allent@atoz MiniShell-Lab-10]> gcc lab -o lab10 lab10.c
+[allent@atoz MiniShell-Lab-10]> lab10
+csc60mshell > ls > lsout
+Argc 0 = ls
+Argc 1 = >
+Argc 2 = lsout
+Child returned status: 4198929
+csc60mshell > cat lsout
+Argc 0 = cat
+Argc 1 = lsout
+lab10
+lab10.c
+Lab 10 Shell F18.pdf
+Lab 10 Slides.pdf
+names.txt
+README.md
+redirtest.sh
+TaylorAllen_lab10.txt
+Child returned status: 4198929
+csc60mshell > ls > lsout > file1
+Argc 0 = ls
+Argc 1 = >
+Argc 2 = lsout
+Argc 3 = >
+Argc 4 = file1
+Error: Cannot output to more than one file.
+Child returned status: 4198929
+csc60mshell > cat foo.txt
+Argc 0 = cat
+Argc 1 = foo.txt
+cat: foo.txt: No such file or directory
+Child returned status: 4198929
+csc60mshell > > lsout
+Argc 0 = >
+Argc 1 = lsout
+Error: No command entered.
+Child returned status: 4198929
+csc60mshell > < lsout
+Argc 0 = <
+Argc 1 = lsout
+Error: No command entered.
+Child returned status: 4198929
+csc60mshell > wc < lsout >    
+Argc 0 = wc
+Argc 1 = <
+Argc 2 = lsout
+ 12  17 141
+Child returned status: 4198929
+csc60mshell > wc < lsout > wcout
+Argc 0 = wc
+Argc 1 = <
+Argc 2 = lsout
+Argc 3 = >
+Argc 4 = wcout
+Child returned status: 4198929
+csc60mshell > cat wcout
+Argc 0 = cat
+Argc 1 = wcout
+ 12  17 141
+Child returned status: 4198929
+csc60mshell > wc < lsout < wcout
+Argc 0 = wc
+Argc 1 = <
+Argc 2 = lsout
+Argc 3 = <
+Argc 4 = wcout
+Error: Cannot input to more than one file.
+Child returned status: 4198929
+csc60mshell > cd
+Argc 0 = cd
+csc60mshell > cd School/CSC-060/Lab-1
+Argc 0 = cd
+Argc 1 = School/CSC-060/Lab-1
+csc60mshell > ls
+Argc 0 = ls
+a.out  lab1.c  lab1.pdf  TaylorAllen_lab1.txt
+Child returned status: 4198929
+csc60mshell > gcc lab1.c
+Argc 0 = gcc
+Argc 1 = lab1.c
+Child returned status: 4198929
+csc60mshell > a.out
+Argc 0 = a.out
+
+Lab 1 
+
+Hello World
+
+Hi, Taylor Allen
+
+We keep moving forward, opening new doors, and doing new things, because we're curious
+and curiosity keeps leading us down new paths. - Walt Disney
+
+Child returned status: 4198929
+csc60mshell > exit
+Argc 0 = exit
+[allent@atoz MiniShell-Lab-10]> exit
+exit
+
+Script done on Mon 03 Dec 2018 05:26:37 PM PST
